@@ -142,7 +142,7 @@ export function modifyUserConfig(
     if (userConfig.minimize == null) userConfig.minimize = true
     logger.debug(
       `--production 开启, 将以 mode = '${userConfig.mode}' 和 ` +
-        `minimize = ${userConfig.minimize} 运行 compile`
+      `minimize = ${userConfig.minimize} 运行 compile`
     )
   }
 
@@ -241,7 +241,7 @@ export function applyDefaults(
   userConfig.conditionalCompile = userConfig.conditionalCompile ?? {}
   userConfig.conditionalCompile.fileExt = asArray(
     userConfig.conditionalCompile.fileExt ??
-      composedPlugins.defaultConditionalFileExt[target]
+    composedPlugins.defaultConditionalFileExt[target]
   )
 
   // 多配置情况下, 检查其他配置中的 conditionalCompile.context 中所涉及到的变量
@@ -354,7 +354,7 @@ export function applyDefaults(
         if (userConfig['originalCompilerModule']) {
           logger.warnOnce(
             '发现 userConfig.originalCompilerModule 值不为空, ' +
-              '该属性被用于标记原始编译的模块类型, 请更换'
+            '该属性被用于标记原始编译的模块类型, 请更换'
           )
         }
         userConfig['originalCompilerModule'] =
@@ -398,7 +398,7 @@ export function applyDefaults(
           if (userConfig.compilerOptions.importHelpers) {
             logger.warnOnce(
               `当前安装的 tslib 版本为 \`${tslibVersion}\`\n` +
-                '需要的版本为 tslib@2 , 已自动关闭 `importHelpers` 选项'
+              '需要的版本为 tslib@2 , 已自动关闭 `importHelpers` 选项'
             )
           }
           // 关闭 importHelpers
@@ -413,7 +413,7 @@ export function applyDefaults(
       if (userConfig.compilerOptions.importHelpers) {
         logger.warnOnce(
           '开启选项 compilerOptions.importHelpers 需要安装 tslib@2 依赖\n' +
-            '已自动关闭 `importHelpers` 选项, 请安装 tslib@2 之后重试'
+          '已自动关闭 `importHelpers` 选项, 请安装 tslib@2 之后重试'
         )
       }
 
@@ -434,7 +434,7 @@ export function applyDefaults(
   if (userConfig.autoInjectRuntime !== false) {
     userConfig.autoInjectRuntime =
       userConfig.autoInjectRuntime === true ||
-      userConfig.autoInjectRuntime == null
+        userConfig.autoInjectRuntime == null
         ? {}
         : userConfig.autoInjectRuntime
 
@@ -450,7 +450,7 @@ export function applyDefaults(
         userConfig.autoInjectRuntime.api === true
           ? GlobalObjectTransformTypes.enhanced
           : userConfig.autoInjectRuntime.api ??
-            GlobalObjectTransformTypes.enhanced
+          GlobalObjectTransformTypes.enhanced
       if (sourceType !== SourceTypes.alipay) {
         userConfig.autoInjectRuntime.behavior =
           userConfig.autoInjectRuntime.behavior ?? true
@@ -531,8 +531,8 @@ export function generateChunkLoadingGlobal(
       userConfig.compileType === CompileTypes.subpackage
         ? 's'
         : userConfig.compileType === CompileTypes.plugin
-        ? 'p'
-        : 'c'
+          ? 'p'
+          : 'c'
     segments.push(appType)
 
     // 未定义 globalNameSuffix 时尝试以 package.json 的 name 作为区分，避免冲突
@@ -761,7 +761,7 @@ export async function buildWebpackConfig(
   // 开启处理 node_modules 代表能够支持直接将 node_modules 组件库中的源码组件
   // 编译为目标平台的组件，需要拓展组件库的解析目录支持，追加源码平台的 mainFields
   if (processNodeModules) {
-    ;(composedPlugins.resolveMainFields[sourceType] || []).forEach(
+    ; (composedPlugins.resolveMainFields[sourceType] || []).forEach(
       (field: string) => {
         if (!mainFields.includes(field)) mainFields.push(field)
       }
@@ -798,7 +798,7 @@ export async function buildWebpackConfig(
       if (fallbackNodeModule.endsWith(NODE_MODULES)) {
         chain.resolve.modules.add(fallbackNodeModule).end()
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   chain.resolve
@@ -899,8 +899,8 @@ export async function buildWebpackConfig(
       userConfig.jsMinimizer =
         userConfig.jsMinimizer === true || !userConfig.jsMinimizer
           ? // target 为 es5 时 若用户未指定 jsMinimizer 则默认使用 terser
-            // 以获得更好的兼容性
-            minimizerTarget === 'es5'
+          // 以获得更好的兼容性
+          minimizerTarget === 'es5'
             ? JSMinimizerTypes.terser
             : JSMinimizerTypes.esbuild
           : userConfig.jsMinimizer
@@ -921,7 +921,7 @@ export async function buildWebpackConfig(
           if (minimizerTarget === 'es5') {
             logger.warnOnce(
               'esbuild 对 ES5 的支持有限, 如有编译报错或运行时相关问题, \n' +
-                `可以尝试配置 \`jsMinimizer\` 为 \`terser\` 或 \`swc\``
+              `可以尝试配置 \`jsMinimizer\` 为 \`terser\` 或 \`swc\``
             )
           }
           jsMinifyConfig.minify = TerserPlugin.esbuildMinify
@@ -1140,89 +1140,89 @@ export async function buildWebpackConfig(
   // prettier-ignore
   chain.module
     .rule('less')
-      .test(LESS_REGEXP)
-      .type('asset/resource').generator(generatorOptions)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('style').loader(LOADERS.style).options(commonOptions).end()
-      // less 4 和 less 3 相比有一个 break change
-      // less 4 math 选项默认是 parens-division，也就是说只有放在 () 里面的除法才会被执行
-      // 而 less 3 是 always
-      // 之所以这么修改的原因是为了解决这个 issue: https://github.com/less/less.js/issues/1880
-      // 简而言之就是为了规避 less 和 css 本身语法的冲突，调整了 默认的 less math 配置
-      // 如果有用户遇到类似问题, 可以通过 webpackChain 修改 mor 的 less 配置来调整行为
-      .use('less').loader(resolveDependency('less-loader')).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    .test(LESS_REGEXP)
+    .type('asset/resource').generator(generatorOptions)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('style').loader(LOADERS.style).options(commonOptions).end()
+    // less 4 和 less 3 相比有一个 break change
+    // less 4 math 选项默认是 parens-division，也就是说只有放在 () 里面的除法才会被执行
+    // 而 less 3 是 always
+    // 之所以这么修改的原因是为了解决这个 issue: https://github.com/less/less.js/issues/1880
+    // 简而言之就是为了规避 less 和 css 本身语法的冲突，调整了 默认的 less math 配置
+    // 如果有用户遇到类似问题, 可以通过 webpackChain 修改 mor 的 less 配置来调整行为
+    .use('less').loader(resolveDependency('less-loader')).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
 
   // sass/scss 支持
   // prettier-ignore
   chain.module
     .rule('sass')
-      .test(SASS_REGEXP)
-      .type('asset/resource').generator(generatorOptions)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('style').loader(LOADERS.style).options(commonOptions).end()
-      .use('sass').loader(resolveDependency('sass-loader')).options({
-        // 这里需要强制 sass 的 outputStyle 为 expanded 否则 sass-loader 会根据 mode
-        // 自动压缩 css, 压缩的事情交给  css-minimizer
-        sassOptions: { outputStyle: "expanded" }
-      }).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    .test(SASS_REGEXP)
+    .type('asset/resource').generator(generatorOptions)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('style').loader(LOADERS.style).options(commonOptions).end()
+    .use('sass').loader(resolveDependency('sass-loader')).options({
+      // 这里需要强制 sass 的 outputStyle 为 expanded 否则 sass-loader 会根据 mode
+      // 自动压缩 css, 压缩的事情交给  css-minimizer
+      sassOptions: { outputStyle: "expanded" }
+    }).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
 
   // acss/wxss 支持
   // prettier-ignore
   chain.module
     .rule('style')
-      .test(STYLE_REGEXP)
-      .type('asset/resource').generator(generatorOptions)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('style').loader(LOADERS.style).options(commonOptions).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    .test(STYLE_REGEXP)
+    .type('asset/resource').generator(generatorOptions)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('style').loader(LOADERS.style).options(commonOptions).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
 
   // js 支持
   // prettier-ignore
   chain.module
     .rule('script-js')
-      .test(SCRIPT_REGEXP)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('script').loader(LOADERS.script).options(commonOptions).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    .test(SCRIPT_REGEXP)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('script').loader(LOADERS.script).options(commonOptions).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
   // ts 支持, 和 js 的区别在于 允许引用 node_modules 中的 ts 文件
   // prettier-ignore
   chain.module
     .rule('script-ts')
-      .test(TS_REGEXP)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('script').loader(LOADERS.script).options(commonOptions).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    .test(TS_REGEXP)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('script').loader(LOADERS.script).options(commonOptions).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
 
   // json 支持
   // prettier-ignore
   chain.module
     .rule('config')
-      // 这里需要标记为 json 类型, 否则 webpack 无法正常解析 json5 或 jsonc
-      .type('json')
-      .test(JSON_REGEXP)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('config').loader(LOADERS.config).options(commonOptions).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    // 这里需要标记为 json 类型, 否则 webpack 无法正常解析 json5 或 jsonc
+    .type('json')
+    .test(JSON_REGEXP)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('config').loader(LOADERS.config).options(commonOptions).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
 
   const singleTags = composedPlugins['templateSingleTagNames'][target] || []
   const closingSingleTag =
@@ -1231,29 +1231,29 @@ export async function buildWebpackConfig(
   // prettier-ignore
   chain.module
     .rule('template')
-      .test(TEMPLATE_REGEXP)
-      .type('asset/resource').generator(generatorOptions)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('template').loader(LOADERS.template).options({
-        ...commonOptions, singleTags, closingSingleTag
-      }).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    .test(TEMPLATE_REGEXP)
+    .type('asset/resource').generator(generatorOptions)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('template').loader(LOADERS.template).options({
+      ...commonOptions, singleTags, closingSingleTag
+    }).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
 
   // wxs/sjs 支持
   // prettier-ignore
   chain.module
     .rule('sjs')
-      .test(SJS_REGEXP)
-      .type('asset/resource').generator(generatorOptions)
-      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-      .use('sjs').loader(LOADERS.sjs).options(commonOptions).end()
-      .use('preprocess')
-        .loader(LOADERS.preprocess)
-        .options(commonOptions)
-        .end()
+    .test(SJS_REGEXP)
+    .type('asset/resource').generator(generatorOptions)
+    .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+    .use('sjs').loader(LOADERS.sjs).options(commonOptions).end()
+    .use('preprocess')
+    .loader(LOADERS.preprocess)
+    .options(commonOptions)
+    .end()
 
   // 原生文件支持
   // 这里的原生文件主要指: 微信和支付宝小程序之外的 样式和模版文件
@@ -1268,16 +1268,16 @@ export async function buildWebpackConfig(
     // prettier-ignore
     chain.module
       .rule('native')
-        .test(NATIVE_REGEXP)
-        .type('asset/resource').generator(generatorOptions)
-        .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
-        .use('native').loader(LOADERS.native).options({
-          ...commonOptions, singleTags, closingSingleTag
-        }).end()
-        .use('preprocess')
-          .loader(LOADERS.preprocess)
-          .options(commonOptions)
-          .end()
+      .test(NATIVE_REGEXP)
+      .type('asset/resource').generator(generatorOptions)
+      .use('postprocess').loader(LOADERS.postprocess).options(commonOptions).end()
+      .use('native').loader(LOADERS.native).options({
+        ...commonOptions, singleTags, closingSingleTag
+      }).end()
+      .use('preprocess')
+      .loader(LOADERS.preprocess)
+      .options(commonOptions)
+      .end()
   }
 
   function shouldProcessNodeModules(filePath: string): boolean {
@@ -1301,11 +1301,13 @@ export async function buildWebpackConfig(
   /* 外部资源配置 */
   if (userConfig.externals) {
     chain.externals(userConfig.externals)
-    chain.externalsType(
+    // 默认根据 module 配置判断
+    const defaultExternalsType =
       userConfig.compilerOptions.module === 'CommonJS'
         ? 'commonjs'
         : 'commonjs2'
-    )
+
+    chain.externalsType(userConfig.externalsType || defaultExternalsType)
   }
 
   /* 资源文件拷贝 */
